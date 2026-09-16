@@ -78,3 +78,14 @@
 - [x] Expose `/.well-known/coop-manifest.json` discovery endpoint
 - [x] Implement inter-roaster guest coffee exchange registry
 - [x] Write automated verification tests for federation manifest schemas
+
+---
+
+## Production Containerization & Deployment
+- [x] Multi-stage Dockerfile utilizing `uv` and `python:3.12-slim`
+- [x] Hardened rootless runtime execution (`appuser:10001`)
+- [x] Automated entrypoint running database migrations (`docker-entrypoint.sh`)
+- [x] Comprehensive `.dockerignore` context streaming optimization
+- [x] Production Gunicorn server integration (`pyproject.toml`)
+- [x] Environment reference manifest (`.env.example`)
+- [x] Automated container verification test suite (`tests/test_container.py`)
