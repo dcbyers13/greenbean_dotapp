@@ -10,6 +10,11 @@ class CoffeeProduct(models.Model):
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=200)
+    brand_line = models.CharField(
+        max_length=100,
+        default="Green Bean Coffee Collective",
+        blank=True,
+    )
     slug = models.SlugField(max_length=200, unique=True, db_index=True)
     description = models.TextField(blank=True)
     is_single_origin = models.BooleanField(default=True)

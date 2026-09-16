@@ -37,15 +37,20 @@
         {% for product in products %}
           <article class="product-card">
             <div class="product-card-top">
+              {% if product.brand_line and product.brand_line != "Green Bean Coffee Collective" %}
+                <span class="badge-bakery">{{ product.brand_line }}</span>
+              {% endif %}
               {% if product.roast_profile %}
                 <span class="roast-badge badge-{{ product.roast_profile.roast_level|lower }}">
                   {{ product.roast_profile.get_roast_level_display }}
                 </span>
               {% endif %}
-              {% if product.is_single_origin %}
-                <span class="badge-single-origin">Single Origin</span>
-              {% else %}
-                <span class="badge-blend">Collective Blend</span>
+              {% if product.brand_line == "Green Bean Coffee Collective" or not product.brand_line %}
+                {% if product.is_single_origin %}
+                  <span class="badge-single-origin">Single Origin</span>
+                {% else %}
+                  <span class="badge-blend">Collective Blend</span>
+                {% endif %}
               {% endif %}
             </div>
 

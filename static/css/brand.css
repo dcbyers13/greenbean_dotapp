@@ -641,6 +641,16 @@ body {
   border-radius: var(--radius-full);
 }
 
+.badge-bakery {
+  font-size: 0.75rem;
+  font-weight: 700;
+  background: #FEF3C7;
+  color: #92400E;
+  border: 1px solid #FCD34D;
+  padding: 0.25rem 0.65rem;
+  border-radius: var(--radius-full);
+}
+
 .product-name {
   font-size: 1.35rem;
   font-weight: 800;
@@ -1254,10 +1264,53 @@ body {
   font-size: 0.95rem;
 }
 
+.item-main-line {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
 .item-qty {
   font-weight: 800;
   color: var(--clr-leaf-green);
-  margin-right: 0.4rem;
+  margin-right: 0.2rem;
+}
+
+.item-form-factor {
+  color: #A8B49B;
+  font-size: 0.85rem;
+}
+
+.station-pill {
+  display: inline-block;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  padding: 0.15rem 0.45rem;
+  border-radius: var(--radius-sm);
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.station-barista {
+  background: #6366F1;
+  color: #FFFFFF;
+}
+
+.station-bakery {
+  background: #D97706;
+  color: #FFFFFF;
+}
+
+.station-pour {
+  background: #4B6814;
+  color: #FFFFFF;
+}
+
+.station-retail {
+  background: #5C5248;
+  color: #FFFFFF;
 }
 
 .item-notes {

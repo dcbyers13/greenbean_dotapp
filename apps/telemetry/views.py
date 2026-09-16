@@ -34,6 +34,7 @@ def telemetry_stream(request):
                         "name": f"{item.variant.product.name} ({item.variant.get_form_factor_display()})",
                         "qty": item.quantity,
                         "notes": item.customization_notes,
+                        "station": item.variant.station_tag,
                     }
                     for item in order.items.all()
                 ]

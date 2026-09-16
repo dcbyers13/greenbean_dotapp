@@ -316,6 +316,126 @@ class Command(BaseCommand):
                     },
                 ],
             },
+            {
+                "name": "Violette's Lavender Lemon Scone",
+                "slug": "violettes-lavender-scone",
+                "brand_line": "Violette's Bakery",
+                "description": (
+                    "Delicate artisanal butter scone infused with French culinary lavender and "
+                    "finished with Meyer lemon glaze. Baked fresh daily by Violette's Bakery."
+                ),
+                "is_single_origin": False,
+                "is_active": True,
+                "lot": None,
+                "roast_profile": None,
+                "variants": [
+                    {
+                        "sku": "VB-SCONE-LAV",
+                        "form_factor": ProductVariant.FormFactor.BAKERY,
+                        "package_weight_oz": None,
+                        "grind_option": ProductVariant.GrindOption.WHOLE_BEAN,
+                        "retail_price_usd": Decimal("4.50"),
+                        "stock_units": 24,
+                        "is_available": True,
+                    },
+                ],
+            },
+            {
+                "name": "Violette's Cardamom Morning Bun",
+                "slug": "violettes-cardamom-morning-bun",
+                "brand_line": "Violette's Bakery",
+                "description": (
+                    "Flaky laminated croissant pastry swirled with crushed green cardamom, "
+                    "cinnamon sugar, and fresh orange zest."
+                ),
+                "is_single_origin": False,
+                "is_active": True,
+                "lot": None,
+                "roast_profile": None,
+                "variants": [
+                    {
+                        "sku": "VB-BUN-CARD",
+                        "form_factor": ProductVariant.FormFactor.BAKERY,
+                        "package_weight_oz": None,
+                        "grind_option": ProductVariant.GrindOption.WHOLE_BEAN,
+                        "retail_price_usd": Decimal("5.00"),
+                        "stock_units": 18,
+                        "is_available": True,
+                    },
+                ],
+            },
+            {
+                "name": "Violette's Sea Salt Espresso Brownie",
+                "slug": "violettes-espresso-brownie",
+                "brand_line": "Violette's Bakery",
+                "description": (
+                    "Rich, fudgy double-chocolate brownie spiked with Green Bean espresso "
+                    "and topped with flaky Maldon sea salt."
+                ),
+                "is_single_origin": False,
+                "is_active": True,
+                "lot": None,
+                "roast_profile": None,
+                "variants": [
+                    {
+                        "sku": "VB-BRWN-SEA",
+                        "form_factor": ProductVariant.FormFactor.BAKERY,
+                        "package_weight_oz": None,
+                        "grind_option": ProductVariant.GrindOption.WHOLE_BEAN,
+                        "retail_price_usd": Decimal("4.25"),
+                        "stock_units": 30,
+                        "is_available": True,
+                    },
+                ],
+            },
+            {
+                "name": "Honey Cardamom Oat Latte",
+                "slug": "honey-cardamom-oat-latte",
+                "brand_line": "Green Bean Coffee Collective",
+                "description": (
+                    "Double shot of Antigua espresso pulled over wildflower honey and crushed green cardamom, "
+                    "steamed with velvety oat milk."
+                ),
+                "is_single_origin": False,
+                "is_active": True,
+                "lot": lots["Guatemala"],
+                "roast_profile": profiles["Midnight Roast (Vienna)"],
+                "variants": [
+                    {
+                        "sku": "GB-SPEC-HC-LAT",
+                        "form_factor": ProductVariant.FormFactor.SPECIALTY_BEVERAGE,
+                        "package_weight_oz": None,
+                        "grind_option": ProductVariant.GrindOption.FINE,
+                        "retail_price_usd": Decimal("6.25"),
+                        "stock_units": 999,
+                        "is_available": True,
+                    },
+                ],
+            },
+            {
+                "name": "Salted Caramel Cold Foam Cold Brew",
+                "slug": "salted-caramel-cold-foam-cold-brew",
+                "brand_line": "Green Bean Coffee Collective",
+                "description": (
+                    "Slow-steeped Colombian cold brew layered with house-made salted caramel "
+                    "and topped with thick aerated cold foam."
+                ),
+                "is_single_origin": False,
+                "is_active": True,
+                "lot": lots["Colombia"],
+                "roast_profile": coop_medium,
+                "variants": [
+                    {
+                        "sku": "GB-SPEC-SCCF-CB",
+                        "form_factor": ProductVariant.FormFactor.SPECIALTY_BEVERAGE,
+                        "package_weight_oz": None,
+                        "grind_option": ProductVariant.GrindOption.COARSE,
+                        "retail_price_usd": Decimal("5.75"),
+                        "stock_units": 999,
+                        "is_available": True,
+                    },
+                ],
+            },
         ]
 
         variant_map = {}
@@ -350,7 +470,7 @@ class Command(BaseCommand):
                 "customer_name": "Sam Green",
                 "customer_phone": "555-0192",
                 "curbside_spot": "",
-                "total_price_usd": Decimal("8.50"),
+                "total_price_usd": Decimal("13.00"),
                 "beacon": {
                     "token": "mock_beacon_sam_green",
                     "status": ArrivalBeacon.ArrivalStatus.PENDING,
@@ -359,6 +479,7 @@ class Command(BaseCommand):
                 },
                 "items": [
                     {"sku": "GB-ETH-DRIP", "qty": 2, "price": Decimal("4.25"), "notes": "One with splash of oat milk"},
+                    {"sku": "VB-SCONE-LAV", "qty": 1, "price": Decimal("4.50"), "notes": "Warm"},
                 ],
             },
             {
@@ -386,7 +507,7 @@ class Command(BaseCommand):
                 "customer_name": "Marcus Vance",
                 "customer_phone": "555-0194",
                 "curbside_spot": "Spot 1 (Silver Subaru)",
-                "total_price_usd": Decimal("39.00"),
+                "total_price_usd": Decimal("28.50"),
                 "beacon": {
                     "token": "mock_beacon_marcus_vance",
                     "status": ArrivalBeacon.ArrivalStatus.ARRIVED,
@@ -396,6 +517,7 @@ class Command(BaseCommand):
                 "items": [
                     {"sku": "GB-HB-12OZ-WB", "qty": 1, "price": Decimal("18.00"), "notes": "Fresh roast batch"},
                     {"sku": "GB-ETH-DRIP", "qty": 1, "price": Decimal("4.25"), "notes": "Black, no lid needed"},
+                    {"sku": "GB-SPEC-HC-LAT", "qty": 1, "price": Decimal("6.25"), "notes": "Extra oat foam, light honey"},
                 ],
             },
         ]

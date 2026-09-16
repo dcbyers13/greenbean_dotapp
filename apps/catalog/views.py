@@ -14,7 +14,9 @@ class CatalogListView(ListView):
     FILTER_CHOICES = [
         {"key": "ALL", "label": "All Offerings"},
         {"key": "BEANS_GROUND", "label": "Whole Bean & Ground"},
-        {"key": "LIVE_CUP", "label": "Live Cups"},
+        {"key": "LIVE_CUP", "label": "Drip & Pour"},
+        {"key": "SPECIALTY_BEVERAGE", "label": "Specialty Bar"},
+        {"key": "BAKERY", "label": "Violette's Bakery"},
         {"key": "AIRPOT", "label": "Airpots & Bulk"},
         {"key": "CONFECTION", "label": "Sweets & Confections"},
     ]
@@ -47,6 +49,8 @@ class CatalogListView(ListView):
             ).distinct()
         elif form_factor in [
             ProductVariant.FormFactor.LIVE_CUP,
+            ProductVariant.FormFactor.SPECIALTY_BEVERAGE,
+            ProductVariant.FormFactor.BAKERY,
             ProductVariant.FormFactor.AIRPOT,
             ProductVariant.FormFactor.CONFECTION,
             ProductVariant.FormFactor.RAW_GREEN,

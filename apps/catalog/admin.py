@@ -83,6 +83,7 @@ class RoastBatchAdmin(admin.ModelAdmin):
 class CoffeeProductAdmin(admin.ModelAdmin):
     list_display = (
         "name",
+        "brand_line",
         "slug",
         "lot_origin",
         "roast_level",
@@ -90,8 +91,8 @@ class CoffeeProductAdmin(admin.ModelAdmin):
         "is_active",
         "variant_count",
     )
-    list_filter = ("is_active", "is_single_origin", "roast_profile__roast_level")
-    search_fields = ("name", "description", "lot__origin_country")
+    list_filter = ("brand_line", "is_active", "is_single_origin", "roast_profile__roast_level")
+    search_fields = ("name", "brand_line", "description", "lot__origin_country")
     prepopulated_fields = {"slug": ("name",)}
     inlines = [ProductVariantInline]
 
@@ -114,6 +115,7 @@ class ProductVariantAdmin(admin.ModelAdmin):
         "sku",
         "product",
         "form_factor",
+        "station_tag_display",
         "package_weight_oz",
         "grind_option",
         "retail_price_usd",
@@ -123,3 +125,7 @@ class ProductVariantAdmin(admin.ModelAdmin):
     list_filter = ("form_factor", "grind_option", "is_available")
     search_fields = ("sku", "product__name")
     ordering = ("product__name", "retail_price_usd")
+
+    @admin.display(description="KDS Station")
+    def station_tag_display(self, obj):
+        return obj.station_tag

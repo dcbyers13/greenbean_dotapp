@@ -66,10 +66,14 @@
           <ul class="ticket-items">
             {% for item in order.items.all %}
               <li class="ticket-item">
-                <span class="item-qty">{{ item.quantity }}x</span>
-                <span class="item-name">{{ item.variant.product.name }} ({{ item.variant.get_form_factor_display }})</span>
+                <div class="item-main-line">
+                  <span class="station-pill station-{{ item.variant.station_tag|lower }}">[{{ item.variant.station_tag }}]</span>
+                  <span class="item-qty">{{ item.quantity }}x</span>
+                  <span class="item-name">{{ item.variant.product.name }}</span>
+                  <span class="item-form-factor">({{ item.variant.get_form_factor_display }})</span>
+                </div>
                 {% if item.customization_notes %}
-                  <div class="item-notes">&bull; {{ item.customization_notes }}</div>
+                  <div class="item-notes"><strong>&bull; {{ item.customization_notes }}</strong></div>
                 {% endif %}
               </li>
             {% endfor %}
@@ -269,9 +273,12 @@ function updateKdsBoard(orders) {
 
     let itemsHtml = order.items.map(item => `
       <li class="ticket-item">
-        <span class="item-qty">${item.qty}x</span>
-        <span class="item-name">${item.name}</span>
-        ${item.notes ? `<div class="item-notes">&bull; ${item.notes}</div>` : ''}
+        <div class="item-main-line">
+          ${item.station ? `<span class="station-pill station-${item.station.toLowerCase()}">[${item.station}]</span>` : ''}
+          <span class="item-qty">${item.qty}x</span>
+          <span class="item-name">${item.name}</span>
+        </div>
+        ${item.notes ? `<div class="item-notes"><strong>&bull; ${item.notes}</strong></div>` : ''}
       </li>
     `).join('');
 

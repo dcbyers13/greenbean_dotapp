@@ -16,15 +16,20 @@
       <div class="product-detail-main">
         <div class="product-header">
           <div class="header-badges">
+            {% if product.brand_line and product.brand_line != "Green Bean Coffee Collective" %}
+              <span class="badge-bakery">{{ product.brand_line }}</span>
+            {% endif %}
             {% if product.roast_profile %}
               <span class="roast-badge badge-{{ product.roast_profile.roast_level|lower }}">
                 {{ product.roast_profile.get_roast_level_display }} Roast
               </span>
             {% endif %}
-            {% if product.is_single_origin %}
-              <span class="badge-single-origin">Single Origin Lot</span>
-            {% else %}
-              <span class="badge-blend">Artisanal Blend</span>
+            {% if product.brand_line == "Green Bean Coffee Collective" or not product.brand_line %}
+              {% if product.is_single_origin %}
+                <span class="badge-single-origin">Single Origin Lot</span>
+              {% else %}
+                <span class="badge-blend">Artisanal Blend</span>
+              {% endif %}
             {% endif %}
           </div>
           <h1 class="detail-product-title">{{ product.name }}</h1>
@@ -39,7 +44,7 @@
 
         {% if product.description %}
           <div class="product-description-card">
-            <h3>About This Coffee</h3>
+            <h3>About This {% if product.brand_line == "Violette's Bakery" %}Pastry{% else %}Offering{% endif %}</h3>
             <p>{{ product.description|linebreaks }}</p>
           </div>
         {% endif %}

@@ -8,11 +8,13 @@ class ProductVariant(models.Model):
 
     class FormFactor(models.TextChoices):
         WHOLE_BEAN = "WHOLE_BEAN", "Whole Bean"
-        GROUND = "GROUND", "Ground Retail"
+        GROUND = "GROUND", "Ground Coffee"
         RAW_GREEN = "RAW_GREEN", "Raw Green Coffee"
-        LIVE_CUP = "LIVE_CUP", "Live Cup / Espresso Bar"
-        AIRPOT = "AIRPOT", "Airpot / Bulk Brew"
-        CONFECTION = "CONFECTION", "Confection / Sweet"
+        LIVE_CUP = "LIVE_CUP", "Live Drip / Pour"
+        SPECIALTY_BEVERAGE = "SPECIALTY_BEVERAGE", "Specialty Espresso / Craft Drink"
+        AIRPOT = "AIRPOT", "Meeting Airpot"
+        BAKERY = "BAKERY", "Violette's Bakery"
+        CONFECTION = "CONFECTION", "Artisanal Confection"
 
     class GrindOption(models.TextChoices):
         WHOLE_BEAN = "WHOLE_BEAN", "Whole Bean (Unopened)"
@@ -54,6 +56,24 @@ class ProductVariant(models.Model):
         verbose_name = "Product Variant"
         verbose_name_plural = "Product Variants"
         ordering = ["product", "retail_price_usd"]
+
+    @property
+    def station_tag(self) -> str:
+        """Return station routing dispatch tag for Barista KDS HUD.
+
+        Values:
+        - BAKERY: Violette's Bakery pastries
+        - POUR: Live drip, brew-to-order, and meeting airpots
+        - BARISTA: Specialty espresso drinks and craft lattes
+        - RETAIL: Whole bean, ground bags, raw sacks, and confections
+        """
+        if self.form_factor == self.FormFactor.BAKERY:
+            return "BAKERY"
+        if self.form_factor in [self.FormFactor.LIVE_CUP, self.FormFactor.AIRPOT]:
+            return "POUR"
+        if self.form_factor == self.FormFactor.SPECIALTY_BEVERAGE:
+            return "BARISTA"
+        return "RETAIL"
 
     def __str__(self):
         weight_str = f" {self.package_weight_oz}oz" if self.package_weight_oz else ""

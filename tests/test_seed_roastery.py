@@ -31,8 +31,8 @@ class SeedRoasteryCommandTestCase(TestCase):
         self.assertEqual(GreenCoffeeLot.objects.count(), 3)
         self.assertEqual(RoastProfile.objects.count(), 3)
         self.assertEqual(RoastBatch.objects.count(), 1)
-        self.assertEqual(CoffeeProduct.objects.count(), 5)
-        self.assertGreaterEqual(ProductVariant.objects.count(), 11)
+        self.assertEqual(CoffeeProduct.objects.count(), 10)
+        self.assertGreaterEqual(ProductVariant.objects.count(), 16)
         self.assertEqual(Order.objects.count(), 3)
         self.assertEqual(ArrivalBeacon.objects.count(), 3)
 
@@ -46,12 +46,31 @@ class SeedRoasteryCommandTestCase(TestCase):
         self.assertIsNotNone(eth_product.lot)
         self.assertEqual(eth_product.lot.origin_country, "Ethiopia")
 
-        # Verify KDS test orders
+        # Verify Violette's Bakery and Specialty items
+        bakery_items = CoffeeProduct.objects.filter(brand_line="Violette's Bakery")
+        self.assertEqual(bakery_items.count(), 3)
+        scone_var = ProductVariant.objects.get(sku="VB-SCONE-LAV")
+        self.assertEqual(scone_var.station_tag, "BAKERY")
+        self.assertEqual(scone_var.form_factor, ProductVariant.FormFactor.BAKERY)
+
+        latte_var = ProductVariant.objects.get(sku="GB-SPEC-HC-LAT")
+        self.assertEqual(latte_var.station_tag, "BARISTA")
+        self.assertEqual(latte_var.form_factor, ProductVariant.FormFactor.SPECIALTY_BEVERAGE)
+
+        # Verify KDS test orders and multi-station line items
+        order_1001 = Order.objects.get(order_number="GB-1001")
+        self.assertEqual(order_1001.items.count(), 2)
+        scone_item = order_1001.items.get(variant__sku="VB-SCONE-LAV")
+        self.assertEqual(scone_item.customization_notes, "Warm")
+
         kds_order = Order.objects.get(order_number="GB-1003")
+        self.assertEqual(kds_order.items.count(), 3)
         self.assertEqual(kds_order.status, Order.Status.ARRIVED_CURBSIDE)
         self.assertEqual(kds_order.fulfillment_type, Order.FulfillmentType.CURBSIDE)
         self.assertEqual(kds_order.curbside_spot, "Spot 1 (Silver Subaru)")
         self.assertEqual(kds_order.arrival_beacon.arrival_status, ArrivalBeacon.ArrivalStatus.ARRIVED)
+        latte_item = kds_order.items.get(variant__sku="GB-SPEC-HC-LAT")
+        self.assertEqual(latte_item.customization_notes, "Extra oat foam, light honey")
 
     def test_seed_roastery_strict_idempotency(self):
         """Running seed_roastery multiple times must never duplicate products, SKUs, or orders."""

@@ -74,6 +74,56 @@ class CatalogModelUUIDTestCase(TestCase):
         self.assertEqual(len(str(self.lot.id)), 36)
         self.assertEqual(len(str(self.product.id)), 36)
 
+    def test_product_brand_line_default_and_custom(self):
+        """CoffeeProduct brand_line must default to Green Bean and allow custom brand lines."""
+        self.assertEqual(self.product.brand_line, "Green Bean Coffee Collective")
+        bakery_item = CoffeeProduct.objects.create(
+            name="Lavender Lemon Scone",
+            slug="test-lavender-scone",
+            brand_line="Violette's Bakery",
+        )
+        self.assertEqual(bakery_item.brand_line, "Violette's Bakery")
+
+    def test_variant_station_tags(self):
+        """ProductVariant.station_tag must correctly route forms to KDS stations."""
+        # Retail forms
+        self.assertEqual(self.variant.station_tag, "RETAIL")
+
+        # Bakery
+        bakery_var = ProductVariant.objects.create(
+            product=self.product,
+            sku="VB-TEST-SCONE",
+            form_factor=ProductVariant.FormFactor.BAKERY,
+            retail_price_usd=Decimal("4.50"),
+        )
+        self.assertEqual(bakery_var.station_tag, "BAKERY")
+
+        # Pour
+        pour_var = ProductVariant.objects.create(
+            product=self.product,
+            sku="GB-TEST-CUP",
+            form_factor=ProductVariant.FormFactor.LIVE_CUP,
+            retail_price_usd=Decimal("4.00"),
+        )
+        self.assertEqual(pour_var.station_tag, "POUR")
+
+        airpot_var = ProductVariant.objects.create(
+            product=self.product,
+            sku="GB-TEST-AIRPOT",
+            form_factor=ProductVariant.FormFactor.AIRPOT,
+            retail_price_usd=Decimal("35.00"),
+        )
+        self.assertEqual(airpot_var.station_tag, "POUR")
+
+        # Barista
+        craft_var = ProductVariant.objects.create(
+            product=self.product,
+            sku="GB-TEST-SPEC",
+            form_factor=ProductVariant.FormFactor.SPECIALTY_BEVERAGE,
+            retail_price_usd=Decimal("6.00"),
+        )
+        self.assertEqual(craft_var.station_tag, "BARISTA")
+
 
 class RoastBatchShrinkageAndStockTestCase(TestCase):
     """Verify batch weight loss shrinkage percentage and green lot stock deductions."""
@@ -251,3 +301,36 @@ class CatalogViewsTestCase(TestCase):
         url = reverse("catalog:catalog_detail", kwargs={"slug": self.inactive_product.slug})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 404)
+
+    def test_catalog_bakery_display_and_filter(self):
+        """Violette's Bakery products must display badge-bakery and be filterable."""
+        bakery_product = CoffeeProduct.objects.create(
+            name="Violette's Morning Bun",
+            slug="violettes-morning-bun",
+            brand_line="Violette's Bakery",
+            description="Flaky laminated dough swirled with cardamom sugar.",
+            is_active=True,
+        )
+        ProductVariant.objects.create(
+            product=bakery_product,
+            sku="VB-TEST-BUN",
+            form_factor=ProductVariant.FormFactor.BAKERY,
+            retail_price_usd=Decimal("5.00"),
+            stock_units=10,
+            is_available=True,
+        )
+
+        # List view includes badge
+        response = self.client.get(reverse("catalog:catalog_list"))
+        self.assertContains(response, "badge-bakery")
+        self.assertContains(response, "Violette&#x27;s Bakery")
+
+        # Filter by BAKERY
+        response_filtered = self.client.get(reverse("catalog:catalog_list"), {"form_factor": "BAKERY"})
+        self.assertIn(bakery_product, response_filtered.context["products"])
+        self.assertNotIn(self.active_product, response_filtered.context["products"])
+
+        # Detail view includes badge
+        response_detail = self.client.get(reverse("catalog:catalog_detail", kwargs={"slug": bakery_product.slug}))
+        self.assertContains(response_detail, "badge-bakery")
+        self.assertContains(response_detail, "About This Pastry")

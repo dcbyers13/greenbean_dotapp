@@ -33,6 +33,18 @@
 
 ---
 
+## Phase 2.5: Violette's Bakery Integration, Specialty Beverage Modifiers & KDS Station Routing
+- [x] Add `brand_line` support to `CoffeeProduct` for "Violette's Bakery" and artisan brand lines
+- [x] Expand `ProductVariant.FormFactor` choices with `BAKERY` and `SPECIALTY_BEVERAGE`
+- [x] Implement `ProductVariant.station_tag` routing logic (`BAKERY`, `POUR`, `BARISTA`, `RETAIL`)
+- [x] Update KDS HUD (`templates/orders/kds.html` & `apps/telemetry/views.py`) with station dispatch badges and bold modifier notes
+- [x] Add high-contrast station pill badges and amber `.badge-bakery` styling in `static/css/brand.css`
+- [x] Update catalog list and detail templates to render brand line badges
+- [x] Update `seed_roastery` command with 3 Violette's Bakery pastries, 2 craft specialty drinks, and multi-station KDS tickets
+- [x] Write comprehensive unit and integration tests for bakery items, station tags, and catalog filtering
+
+---
+
 ## Phase 3: Digital Ordering & Curbside Arrival Telemetry
 - [x] Scaffold `apps/orders` and `apps/telemetry` modules
 - [x] Implement cart session persistence and order creation workflow
