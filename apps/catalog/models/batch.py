@@ -41,6 +41,10 @@ class RoastBatch(models.Model):
         percentage = (loss / self.green_weight_used_kg) * Decimal("100")
         return round(percentage, 2)
 
+    def __init__(self, *args, deduct_stock=True, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.deduct_stock_on_save = deduct_stock
+
     def deduct_lot_stock(self):
         """Deduct the used green coffee weight from the linked lot inventory."""
         if self.lot and self.green_weight_used_kg:
@@ -50,10 +54,11 @@ class RoastBatch(models.Model):
             )
             self.lot.save(update_fields=["green_stock_kg"])
 
-    def save(self, *args, deduct_stock=True, **kwargs):
+    def save(self, *args, deduct_stock=None, **kwargs):
         is_new = self._state.adding
         super().save(*args, **kwargs)
-        if is_new and deduct_stock:
+        should_deduct = self.deduct_stock_on_save if deduct_stock is None else deduct_stock
+        if is_new and should_deduct:
             self.deduct_lot_stock()
 
     def __str__(self):

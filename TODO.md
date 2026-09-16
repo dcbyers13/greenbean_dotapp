@@ -43,6 +43,7 @@
   - Zero-storage client geofence proximity trigger
   - Barista vehicle/spot notification alerts
 - [x] Write integration tests for order checkout and arrival telemetry triggers
+- [x] Implement idempotent seed_roastery command and active KDS test fixtures
 
 ---
 
