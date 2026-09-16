@@ -66,3 +66,10 @@ class StaticAssetsResolutionTestCase(SimpleTestCase):
         self.assertEqual(css_resp.status_code, 200)
         logo_resp = self.client.get("/static/logo.png")
         self.assertEqual(logo_resp.status_code, 200)
+
+    def test_logo_backdrop_color_in_brand_css(self):
+        """brand.css must configure the vibrant #99cb33 background for the logo medallion."""
+        response = self.client.get("/static/css/brand.css")
+        self.assertEqual(response.status_code, 200)
+        content = b"".join(response.streaming_content) if hasattr(response, "streaming_content") else response.content
+        self.assertIn(b"#99cb33", content)

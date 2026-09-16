@@ -8,8 +8,9 @@
   --clr-leaf-green: #80A629;   /* Canvas & Primary Hero */
   --clr-roast-brown: #472F18;  /* Outer Rim & Deep Contrast */
   --clr-brick-red: #9D2E16;    /* Accent Buttons & "BEAN" Typography */
-  --clr-pure-white: #FFFFFF;   /* Medallion Background & Cards */
+  --clr-pure-white: #FFFFFF;   /* Cards & Contrast Details */
   --clr-canvas-dark: #12180B;  /* Dark mode backing */
+  --clr-logo-backdrop: #99cb33; /* Vibrant Logo Circle Backdrop */
 
   /* Neutral & Functional Tones */
   --clr-sand: #F7F5EE;
@@ -26,7 +27,7 @@
   --shadow-sm: 0 2px 4px rgba(18, 24, 11, 0.06);
   --shadow-md: 0 6px 18px rgba(71, 47, 24, 0.10);
   --shadow-lg: 0 16px 36px rgba(71, 47, 24, 0.16);
-  --shadow-medallion: 0 20px 48px rgba(71, 47, 24, 0.22), 0 0 0 10px rgba(255, 255, 255, 0.7);
+  --shadow-medallion: 0 20px 48px rgba(71, 47, 24, 0.22), 0 0 0 10px rgba(153, 203, 51, 0.35);
 
   /* Radius */
   --radius-sm: 6px;
@@ -112,6 +113,7 @@ body {
   height: 38px;
   object-fit: contain;
   border-radius: var(--radius-full);
+  background: var(--clr-logo-backdrop, #99cb33);
 }
 
 .nav-links {
@@ -151,7 +153,7 @@ body {
 }
 
 .medallion-outer {
-  background: var(--clr-pure-white);
+  background: var(--clr-logo-backdrop, #99cb33);
   padding: 1.25rem;
   border-radius: var(--radius-full);
   box-shadow: var(--shadow-medallion);
