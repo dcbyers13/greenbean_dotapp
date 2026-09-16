@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     "catalog.apps.CatalogConfig",
     "orders.apps.OrdersConfig",
     "telemetry.apps.TelemetryConfig",
+    "adapters.iyou_bean.apps.IyouBeanConfig",
 ]
 
 MIDDLEWARE = [

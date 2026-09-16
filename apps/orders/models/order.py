@@ -24,6 +24,11 @@ class Order(models.Model):
         COUNTER_PICKUP = "COUNTER_PICKUP", "Counter Pickup"
         CURBSIDE = "CURBSIDE", "Curbside Pickup"
 
+    class TenderType(models.TextChoices):
+        CASH = "CASH", "Cash"
+        EXTERNAL_CARD = "EXTERNAL_CARD", "Card Terminal"
+        WEBLN = "WEBLN", "WebLN / Lightning"
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     order_number = models.CharField(
         max_length=12,
@@ -41,6 +46,12 @@ class Order(models.Model):
         choices=FulfillmentType.choices,
         default=FulfillmentType.COUNTER_PICKUP,
     )
+    tender_type = models.CharField(
+        max_length=20,
+        choices=TenderType.choices,
+        default=TenderType.CASH,
+        blank=True,
+    )
     customer_name = models.CharField(max_length=100)
     customer_phone = models.CharField(max_length=30, blank=True)
     curbside_spot = models.CharField(
@@ -48,10 +59,39 @@ class Order(models.Model):
         blank=True,
         help_text="e.g. Spot 3 or Silver Subaru",
     )
+    subtotal_usd = models.DecimalField(
+        max_digits=8,
+        decimal_places=2,
+        default=Decimal("0.00"),
+        blank=True,
+    )
+    tax_usd = models.DecimalField(
+        max_digits=8,
+        decimal_places=2,
+        default=Decimal("0.00"),
+        blank=True,
+    )
     total_price_usd = models.DecimalField(
         max_digits=8,
         decimal_places=2,
         default=Decimal("0.00"),
+    )
+    amount_tendered_usd = models.DecimalField(
+        max_digits=8,
+        decimal_places=2,
+        null=True,
+        blank=True,
+    )
+    change_due_usd = models.DecimalField(
+        max_digits=8,
+        decimal_places=2,
+        null=True,
+        blank=True,
+    )
+    terminal_id = models.CharField(
+        max_length=32,
+        default="REG-01",
+        blank=True,
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

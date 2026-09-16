@@ -61,12 +61,12 @@
 ---
 
 ## Phase 4: In-Shop POS & Financial Ledger Integration (`iyou_bean`)
-- [ ] Build touch-optimized counter POS interface for in-shop baristas
-- [ ] Implement receipt printing and cash drawer hardware integration
-- [ ] Scaffold `apps/adapters/iyou_bean` ledger bridge
-- [ ] Build double-entry transaction batching and sync runner
-- [ ] Add COGS inventory depletion accounting sync
-- [ ] Write automated tests for ledger balance reconciliation
+- [x] Build touch-optimized counter POS interface for in-shop baristas
+- [x] Implement receipt printing and cash drawer hardware integration (80mm ESC/POS)
+- [x] Scaffold `apps/adapters/iyou_bean` ledger bridge
+- [x] Build double-entry transaction batching and sync runner
+- [x] Add COGS inventory depletion accounting sync
+- [x] Write automated tests for ledger balance reconciliation
 
 ---
 

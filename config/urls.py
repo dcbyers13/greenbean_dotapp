@@ -9,6 +9,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("menu/", include("catalog.urls", namespace="catalog")),
     path("api/telemetry/", include("telemetry.urls", namespace="telemetry")),
+    path("api/adapters/iyou_bean/", include("adapters.iyou_bean.urls", namespace="iyou_bean")),
     path("", include("orders.urls", namespace="orders")),
     path("", include("core.urls", namespace="core")),
 ]

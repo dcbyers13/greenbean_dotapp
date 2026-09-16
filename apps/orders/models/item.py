@@ -36,5 +36,10 @@ class OrderItem(models.Model):
         """Calculate total price for this line item."""
         return self.quantity * self.unit_price_usd
 
+    @property
+    def station_tag(self) -> str:
+        """Return the routing station tag from the linked product variant."""
+        return self.variant.station_tag
+
     def __str__(self):
         return f"{self.quantity}x {self.variant} (${self.line_total_usd})"
