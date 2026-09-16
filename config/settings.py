@@ -44,6 +44,8 @@ INSTALLED_APPS = [
     # Local application modules
     "core.apps.CoreConfig",
     "catalog.apps.CatalogConfig",
+    "orders.apps.OrdersConfig",
+    "telemetry.apps.TelemetryConfig",
 ]
 
 MIDDLEWARE = [

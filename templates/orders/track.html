@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Order {{ order.order_number }} Status | Green Bean{% endblock %}
+
+{% block content %}
+<div class="tracking-page-wrapper">
+  <div class="container tracking-container">
+    <div class="tracking-card">
+      <!-- Order Header -->
+      <div class="tracking-header">
+        <span class="badge badge-est">Order {{ order.order_number }}</span>
+        <h1 class="tracking-title">
+          {% if order.status == 'COMPLETED' %}
+            Order Completed &mdash; Enjoy!
+          {% elif order.status == 'ARRIVED_CURBSIDE' %}
+            You're Checked In at Curbside!
+          {% elif order.status == 'EN_ROUTE' %}
+            We See You On Your Way!
+          {% elif order.status == 'PREPARING' %}
+            Fresh Roasting &amp; Brewing
+          {% else %}
+            Order Received
+          {% endif %}
+        </h1>
+        <p class="tracking-customer-sub">
+          Hello <strong>{{ order.customer_name }}</strong> &bull; Fulfillment: <strong>{{ order.get_fulfillment_type_display }}</strong>
+        </p>
+      </div>
+
+      <!-- Step Progression Bar -->
+      <div class="progress-stepper">
+        <div class="step-item {% if order.status in 'PLACED,PREPARING,EN_ROUTE,ARRIVED_CURBSIDE,COMPLETED' %}step-done{% endif %}">
+          <div class="step-circle">&check;</div>
+          <div class="step-label">Placed</div>
+        </div>
+        <div class="step-line {% if order.status in 'PREPARING,EN_ROUTE,ARRIVED_CURBSIDE,COMPLETED' %}line-active{% endif %}"></div>
+
+        <div class="step-item {% if order.status in 'PREPARING,EN_ROUTE,ARRIVED_CURBSIDE,COMPLETED' %}step-done{% endif %}">
+          <div class="step-circle">☕</div>
+          <div class="step-label">Brewing</div>
+        </div>
+        <div class="step-line {% if order.status in 'EN_ROUTE,ARRIVED_CURBSIDE,COMPLETED' %}line-active{% endif %}"></div>
+
+        <div class="step-item {% if order.status in 'EN_ROUTE,ARRIVED_CURBSIDE,COMPLETED' %}step-done{% endif %}">
+          <div class="step-circle">🚗</div>
+          <div class="step-label">Ready / Arriving</div>
+        </div>
+        <div class="step-line {% if order.status == 'COMPLETED' %}line-active{% endif %}"></div>
+
+        <div class="step-item {% if order.status == 'COMPLETED' %}step-done{% endif %}">
+          <div class="step-circle">&starf;</div>
+          <div class="step-label">Delivered</div>
+        </div>
+      </div>
+
+      <!-- Curbside Arrival Telemetry Beacon Actions -->
+      {% if order.fulfillment_type == 'CURBSIDE' and order.status != 'COMPLETED' and order.status != 'CANCELLED' %}
+        <div class="curbside-beacon-panel">
+          <div class="beacon-header">
+            <span class="beacon-icon">📡</span>
+            <h3>Curbside Arrival Beacon</h3>
+          </div>
+          <p class="beacon-desc">
+            Let our baristas know when you're en route and parked. Zero GPS tracking needed &mdash; just 1-tap telemetry!
+          </p>
+
+          <form method="POST" action="{% url 'orders:beacon_update' order.id %}" class="beacon-action-form">
+            {% csrf_token %}
+            <input type="hidden" name="token" value="{{ token|default:beacon.ephemeral_token }}">
+
+            <div class="form-group spot-input-group">
+              <label for="curbside_spot">Your Vehicle / Spot Description:</label>
+              <input
+                type="text"
+                id="curbside_spot"
+                name="curbside_spot"
+                class="form-control"
+                placeholder="e.g. Blue Prius, Spot 2, or Hazard lights on"
+                value="{{ order.curbside_spot }}"
+              >
+            </div>
+
+            <div class="beacon-buttons-grid">
+              <button
+                type="submit"
+                name="status"
+                value="EN_ROUTE"
+                class="btn btn-secondary btn-beacon {% if order.status == 'EN_ROUTE' %}active-state{% endif %}"
+              >
+                🚗 I'm On My Way (5 min)
+              </button>
+
+              <button
+                type="submit"
+                name="status"
+                value="ARRIVED_CURBSIDE"
+                class="btn btn-primary btn-beacon {% if order.status == 'ARRIVED_CURBSIDE' %}active-state pulse-button{% endif %}"
+              >
+                📍 I'm Here! (Parked)
+              </button>
+            </div>
+          </form>
+
+          {% if order.status == 'ARRIVED_CURBSIDE' %}
+            <div class="arrived-callout">
+              <strong>✨ Alert Sent to Counter!</strong> A barista is bringing your fresh order to your vehicle now.
+            </div>
+          {% endif %}
+        </div>
+      {% endif %}
+
+      <!-- Order Items Summary -->
+      <div class="order-summary-box">
+        <h3>Order Items</h3>
+        <ul class="summary-items-list">
+          {% for item in order.items.all %}
+            <li class="summary-item">
+              <div class="item-desc">
+                <strong>{{ item.quantity }}x {{ item.variant.product.name }}</strong>
+                <span class="item-sub">({{ item.variant.get_form_factor_display }}{% if item.variant.package_weight_oz %}, {{ item.variant.package_weight_oz }}oz{% endif %})</span>
+                {% if item.customization_notes %}
+                  <div class="item-notes-text">Notes: {{ item.customization_notes }}</div>
+                {% endif %}
+              </div>
+              <div class="item-price">${{ item.line_total_usd }}</div>
+            </li>
+          {% endfor %}
+        </ul>
+        <div class="summary-total-row">
+          <span>Total Paid:</span>
+          <span class="total-price">${{ order.total_price_usd }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Auto-refresh order state if not completed
+{% if order.status != 'COMPLETED' and order.status != 'CANCELLED' %}
+setInterval(function() {
+  fetch(window.location.href, {
+    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+  }).then(res => {
+    // If completed or status changed, reload
+    if (res.ok) {
+      // Periodic check
+    }
+  });
+}, 5000);
+{% endif %}
+</script>
+{% endblock %}

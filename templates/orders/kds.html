@@ -1,0 +1,313 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Barista Kitchen Display System (KDS) HUD | Green Bean{% endblock %}
+
+{% block content %}
+<div class="kds-hud-wrapper">
+  <div class="container-fluid kds-container">
+    <!-- KDS Header & Live Telemetry HUD -->
+    <header class="kds-header">
+      <div class="kds-title-block">
+        <h1 class="kds-heading">COUNTER KDS HUD</h1>
+        <div class="kds-status-indicator">
+          <span class="pulse-dot active" id="sse-status-dot"></span>
+          <span id="sse-status-text">LIVE TELEMETRY ACTIVE</span>
+        </div>
+      </div>
+
+      <div class="kds-metrics-bar">
+        <div class="metric-card">
+          <div class="metric-val" id="metric-queue-count">{{ queue_count }}</div>
+          <div class="metric-lbl">Active Queue</div>
+        </div>
+        <div class="metric-card metric-alert {% if curbside_alerts_count > 0 %}active-strobe{% endif %}" id="metric-curbside-box">
+          <div class="metric-val" id="metric-curbside-count">{{ curbside_alerts_count }}</div>
+          <div class="metric-lbl">Curbside Arrived</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-val">100%</div>
+          <div class="metric-lbl">Direct Trade</div>
+        </div>
+      </div>
+    </header>
+
+    <!-- KDS Tickets Board -->
+    <main class="kds-board" id="kds-board">
+      {% for order in orders %}
+        <article
+          class="kds-ticket ticket-status-{{ order.status|lower }} {% if order.status == 'ARRIVED_CURBSIDE' %}ticket-arrived-strobe{% endif %}"
+          id="ticket-{{ order.id }}"
+          data-order-id="{{ order.id }}"
+          data-status="{{ order.status }}"
+        >
+          <div class="ticket-header">
+            <span class="ticket-num">{{ order.order_number }}</span>
+            <span class="badge {% if order.fulfillment_type == 'CURBSIDE' %}badge-domain{% else %}badge-est{% endif %}">
+              {{ order.get_fulfillment_type_display }}
+            </span>
+          </div>
+
+          <div class="ticket-customer">
+            <div class="cust-name">{{ order.customer_name }}</div>
+            {% if order.curbside_spot %}
+              <div class="curbside-spot-alert">
+                <span class="spot-icon">🚗</span>
+                <strong>{{ order.curbside_spot }}</strong>
+              </div>
+            {% endif %}
+          </div>
+
+          <div class="ticket-status-pill status-{{ order.status|lower }}">
+            {{ order.get_status_display }}
+          </div>
+
+          <!-- Items List -->
+          <ul class="ticket-items">
+            {% for item in order.items.all %}
+              <li class="ticket-item">
+                <span class="item-qty">{{ item.quantity }}x</span>
+                <span class="item-name">{{ item.variant.product.name }} ({{ item.variant.get_form_factor_display }})</span>
+                {% if item.customization_notes %}
+                  <div class="item-notes">&bull; {{ item.customization_notes }}</div>
+                {% endif %}
+              </li>
+            {% endfor %}
+          </ul>
+
+          <div class="ticket-footer">
+            <div class="ticket-time" data-created="{{ order.created_at.isoformat }}">
+              {{ order.created_at|timesince }} ago
+            </div>
+            <div class="ticket-actions">
+              {% if order.status == 'PLACED' %}
+                <button
+                  class="btn btn-sm btn-kds btn-prepare"
+                  onclick="bumpOrder('{{ order.id }}', 'PREPARING')"
+                >
+                  Prepare &rarr;
+                </button>
+              {% elif order.status == 'PREPARING' %}
+                {% if order.fulfillment_type == 'CURBSIDE' %}
+                  <button
+                    class="btn btn-sm btn-kds btn-arrive"
+                    onclick="bumpOrder('{{ order.id }}', 'ARRIVED_CURBSIDE')"
+                  >
+                    Arrived &bull;
+                  </button>
+                {% endif %}
+                <button
+                  class="btn btn-sm btn-kds btn-complete"
+                  onclick="bumpOrder('{{ order.id }}', 'COMPLETED')"
+                >
+                  Complete &check;
+                </button>
+              {% elif order.status == 'EN_ROUTE' %}
+                <button
+                  class="btn btn-sm btn-kds btn-arrive"
+                  onclick="bumpOrder('{{ order.id }}', 'ARRIVED_CURBSIDE')"
+                >
+                  Arrived &bull;
+                </button>
+                <button
+                  class="btn btn-sm btn-kds btn-complete"
+                  onclick="bumpOrder('{{ order.id }}', 'COMPLETED')"
+                >
+                  Complete &check;
+                </button>
+              {% elif order.status == 'ARRIVED_CURBSIDE' %}
+                <button
+                  class="btn btn-sm btn-kds btn-complete btn-bump-primary"
+                  onclick="bumpOrder('{{ order.id }}', 'COMPLETED')"
+                >
+                  BUMP TICKET &check;
+                </button>
+              {% endif %}
+            </div>
+          </div>
+        </article>
+      {% empty %}
+        <div class="kds-empty-state" id="kds-empty">
+          <div class="empty-icon">✨</div>
+          <h2>Counter Queue Clear</h2>
+          <p>No active orders in production. All roasts and pours delivered.</p>
+        </div>
+      {% endfor %}
+    </main>
+  </div>
+</div>
+
+<script>
+// CSRF Token Helper
+function getCookie(name) {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== '') {
+    const cookies = document.cookie.split(';');
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      if (cookie.substring(0, name.length + 1) === (name + '=')) {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
+      }
+    }
+  }
+  return cookieValue;
+}
+
+const csrftoken = getCookie('greenbean_csrftoken');
+
+// Bump Order Handler
+function bumpOrder(orderId, newStatus) {
+  const url = `/counter/orders/${orderId}/bump/`;
+  const formData = new FormData();
+  formData.append('new_status', newStatus);
+
+  fetch(url, {
+    method: 'POST',
+    headers: {
+      'X-CSRFToken': csrftoken,
+      'X-Requested-With': 'XMLHttpRequest'
+    },
+    body: formData
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.status === 'ok') {
+      const ticket = document.getElementById(`ticket-${orderId}`);
+      if (ticket) {
+        if (newStatus === 'COMPLETED' || newStatus === 'CANCELLED') {
+          ticket.style.transform = 'scale(0.8)';
+          ticket.style.opacity = '0';
+          setTimeout(() => ticket.remove(), 250);
+        } else {
+          ticket.className = `kds-ticket ticket-status-${newStatus.toLowerCase()} ${newStatus === 'ARRIVED_CURBSIDE' ? 'ticket-arrived-strobe' : ''}`;
+          const pill = ticket.querySelector('.ticket-status-pill');
+          if (pill) {
+            pill.className = `ticket-status-pill status-${newStatus.toLowerCase()}`;
+            pill.textContent = data.new_status_display;
+          }
+        }
+      }
+    }
+  })
+  .catch(err => console.error('Bump error:', err));
+}
+
+// Subscribe to Live SSE Telemetry Stream
+let sseSource = null;
+function initKdsStream() {
+  if (!!window.EventSource) {
+    sseSource = new EventSource('/api/telemetry/stream/');
+
+    sseSource.onopen = function() {
+      document.getElementById('sse-status-dot').className = 'pulse-dot active';
+      document.getElementById('sse-status-text').textContent = 'LIVE TELEMETRY ACTIVE';
+    };
+
+    sseSource.onerror = function() {
+      document.getElementById('sse-status-dot').className = 'pulse-dot warning';
+      document.getElementById('sse-status-text').textContent = 'RECONNECTING STREAM...';
+    };
+
+    sseSource.onmessage = function(e) {
+      try {
+        const data = JSON.parse(e.data);
+        if (data.orders) {
+          updateKdsBoard(data.orders);
+        }
+      } catch (err) {
+        console.error('SSE JSON error:', err);
+      }
+    };
+  }
+}
+
+function updateKdsBoard(orders) {
+  const board = document.getElementById('kds-board');
+  const queueCountEl = document.getElementById('metric-queue-count');
+  const curbsideCountEl = document.getElementById('metric-curbside-count');
+  const curbsideBox = document.getElementById('metric-curbside-box');
+
+  let curbsideCount = 0;
+  orders.forEach(o => {
+    if (o.status === 'ARRIVED_CURBSIDE') curbsideCount++;
+  });
+
+  if (queueCountEl) queueCountEl.textContent = orders.length;
+  if (curbsideCountEl) curbsideCountEl.textContent = curbsideCount;
+  if (curbsideBox) {
+    if (curbsideCount > 0) curbsideBox.classList.add('active-strobe');
+    else curbsideBox.classList.remove('active-strobe');
+  }
+
+  if (orders.length === 0) {
+    board.innerHTML = `
+      <div class="kds-empty-state" id="kds-empty">
+        <div class="empty-icon">✨</div>
+        <h2>Counter Queue Clear</h2>
+        <p>No active orders in production. All roasts and pours delivered.</p>
+      </div>`;
+    return;
+  }
+
+  // Preserve existing tickets or rebuild dynamically
+  const emptyState = document.getElementById('kds-empty');
+  if (emptyState) emptyState.remove();
+
+  orders.forEach(order => {
+    let ticket = document.getElementById(`ticket-${order.id}`);
+    if (!ticket) {
+      // Build new ticket
+      ticket = document.createElement('article');
+      ticket.id = `ticket-${order.id}`;
+      ticket.dataset.orderId = order.id;
+      board.appendChild(ticket);
+    }
+
+    ticket.className = `kds-ticket ticket-status-${order.status.toLowerCase()} ${order.status === 'ARRIVED_CURBSIDE' ? 'ticket-arrived-strobe' : ''}`;
+    ticket.dataset.status = order.status;
+
+    let itemsHtml = order.items.map(item => `
+      <li class="ticket-item">
+        <span class="item-qty">${item.qty}x</span>
+        <span class="item-name">${item.name}</span>
+        ${item.notes ? `<div class="item-notes">&bull; ${item.notes}</div>` : ''}
+      </li>
+    `).join('');
+
+    let actionButtons = '';
+    if (order.status === 'PLACED') {
+      actionButtons = `<button class="btn btn-sm btn-kds btn-prepare" onclick="bumpOrder('${order.id}', 'PREPARING')">Prepare &rarr;</button>`;
+    } else if (order.status === 'PREPARING' || order.status === 'EN_ROUTE') {
+      actionButtons = `
+        ${order.type === 'CURBSIDE' ? `<button class="btn btn-sm btn-kds btn-arrive" onclick="bumpOrder('${order.id}', 'ARRIVED_CURBSIDE')">Arrived &bull;</button>` : ''}
+        <button class="btn btn-sm btn-kds btn-complete" onclick="bumpOrder('${order.id}', 'COMPLETED')">Complete &check;</button>
+      `;
+    } else if (order.status === 'ARRIVED_CURBSIDE') {
+      actionButtons = `<button class="btn btn-sm btn-kds btn-complete btn-bump-primary" onclick="bumpOrder('${order.id}', 'COMPLETED')">BUMP TICKET &check;</button>`;
+    }
+
+    ticket.innerHTML = `
+      <div class="ticket-header">
+        <span class="ticket-num">${order.number}</span>
+        <span class="badge ${order.type === 'CURBSIDE' ? 'badge-domain' : 'badge-est'}">${order.type === 'CURBSIDE' ? 'Curbside' : 'Counter'}</span>
+      </div>
+      <div class="ticket-customer">
+        <div class="cust-name">${order.customer}</div>
+        ${order.spot ? `<div class="curbside-spot-alert"><span class="spot-icon">🚗</span><strong>${order.spot}</strong></div>` : ''}
+      </div>
+      <div class="ticket-status-pill status-${order.status.toLowerCase()}">
+        ${order.status_display}
+      </div>
+      <ul class="ticket-items">${itemsHtml}</ul>
+      <div class="ticket-footer">
+        <div class="ticket-time">Active Ticket</div>
+        <div class="ticket-actions">${actionButtons}</div>
+      </div>
+    `;
+  });
+}
+
+document.addEventListener('DOMContentLoaded', initKdsStream);
+</script>
+{% endblock %}

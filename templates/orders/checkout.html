@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Checkout &amp; Fulfillment | Green Bean{% endblock %}
+
+{% block content %}
+<div class="checkout-page-wrapper">
+  <div class="container checkout-container">
+    <div class="checkout-header">
+      <h1 class="checkout-title">Order Checkout &amp; Fulfillment</h1>
+      <p class="checkout-subtitle">Worker-owned, freshly roasted, directly delivered.</p>
+    </div>
+
+    {% if error %}
+      <div class="alert-banner error-banner">
+        {{ error }}
+      </div>
+    {% endif %}
+
+    <div class="checkout-layout">
+      <!-- Checkout Form -->
+      <div class="checkout-form-card">
+        <form method="POST" action="{% url 'orders:checkout' %}">
+          {% csrf_token %}
+          <div class="form-section">
+            <h3>1. Customer Information</h3>
+            <div class="form-group">
+              <label for="customer_name">Your Name (for pickup ticket) *</label>
+              <input
+                type="text"
+                id="customer_name"
+                name="customer_name"
+                class="form-control"
+                required
+                placeholder="e.g. Maya Lin"
+              >
+            </div>
+            <div class="form-group">
+              <label for="customer_phone">Phone Number (optional SMS alerts)</label>
+              <input
+                type="tel"
+                id="customer_phone"
+                name="customer_phone"
+                class="form-control"
+                placeholder="e.g. 555-0199"
+              >
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h3>2. Fulfillment Method</h3>
+            <div class="fulfillment-radio-group">
+              <label class="radio-card">
+                <input
+                  type="radio"
+                  name="fulfillment_type"
+                  value="COUNTER_PICKUP"
+                  checked
+                  onchange="toggleCurbside(false)"
+                >
+                <div class="radio-content">
+                  <strong>Counter Pickup</strong>
+                  <span>Collect directly from the roastery baristas.</span>
+                </div>
+              </label>
+
+              <label class="radio-card">
+                <input
+                  type="radio"
+                  name="fulfillment_type"
+                  value="CURBSIDE"
+                  onchange="toggleCurbside(true)"
+                >
+                <div class="radio-content">
+                  <strong>Curbside Arrival</strong>
+                  <span>Delivered directly to your vehicle with 1-tap beacon.</span>
+                </div>
+              </label>
+            </div>
+
+            <div class="form-group curbside-spot-group" id="curbside-spot-field" style="display: none;">
+              <label for="curbside_spot">Vehicle Description or Spot #</label>
+              <input
+                type="text"
+                id="curbside_spot"
+                name="curbside_spot"
+                class="form-control"
+                placeholder="e.g. White Outback, Spot 4"
+              >
+              <small class="form-help">You can also update this later on your live tracking beacon.</small>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary btn-block">Place Order &rarr; ${{ cart.subtotal }}</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Order Summary Aside -->
+      <aside class="checkout-summary-card">
+        <h3>Order Items</h3>
+        <ul class="summary-items-list">
+          {% for item in cart.items %}
+            <li class="summary-item">
+              <div>
+                <strong>{{ item.quantity }}x {{ item.variant.product.name }}</strong>
+                <span class="item-sub">({{ item.variant.get_form_factor_display }})</span>
+              </div>
+              <div class="item-price">${{ item.line_total }}</div>
+            </li>
+          {% endfor %}
+        </ul>
+        <div class="summary-total-row">
+          <span>Total:</span>
+          <span class="total-price">${{ cart.subtotal }}</span>
+        </div>
+      </aside>
+    </div>
+  </div>
+</div>
+
+<script>
+function toggleCurbside(isCurbside) {
+  const spotField = document.getElementById('curbside-spot-field');
+  if (spotField) {
+    spotField.style.display = isCurbside ? 'block' : 'none';
+  }
+}
+</script>
+{% endblock %}

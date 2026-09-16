@@ -34,15 +34,15 @@
 ---
 
 ## Phase 3: Digital Ordering & Curbside Arrival Telemetry
-- [ ] Scaffold `apps/orders` and `apps/telemetry` modules
-- [ ] Implement cart session persistence and order creation workflow
-- [ ] Implement order lifecycle state machine (`PLACED`, `PREPARING`, `EN_ROUTE`, `ARRIVED_CURBSIDE`, `COMPLETED`)
-- [ ] Build real-time Barista Kitchen Display System (KDS) dashboard
-- [ ] Implement privacy-preserving curbside proximity handshake:
+- [x] Scaffold `apps/orders` and `apps/telemetry` modules
+- [x] Implement cart session persistence and order creation workflow
+- [x] Implement order lifecycle state machine (`PLACED`, `PREPARING`, `EN_ROUTE`, `ARRIVED_CURBSIDE`, `COMPLETED`)
+- [x] Build real-time Barista Kitchen Display System (KDS) dashboard
+- [x] Implement privacy-preserving curbside proximity handshake:
   - Ephemeral HMAC-signed arrival tokens
   - Zero-storage client geofence proximity trigger
   - Barista vehicle/spot notification alerts
-- [ ] Write integration tests for order checkout and arrival telemetry triggers
+- [x] Write integration tests for order checkout and arrival telemetry triggers
 
 ---
 

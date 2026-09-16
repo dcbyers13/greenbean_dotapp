@@ -20,9 +20,10 @@
         </a>
         <nav>
           <ul class="nav-links">
-            <li><a href="{% url 'catalog:catalog_list' %}" class="nav-link">Menu & Catalog</a></li>
+            <li><a href="{% url 'catalog:catalog_list' %}" class="nav-link">Menu &amp; Catalog</a></li>
+            <li><a href="{% url 'orders:kds_hud' %}" class="nav-link">Barista KDS</a></li>
+            <li><a href="{% url 'orders:cart_detail' %}" class="nav-link">Cart</a></li>
             <li><a href="{% url 'core:splash' %}#mission" class="nav-link">Mission</a></li>
-            <li><a href="{% url 'core:splash' %}#pillars" class="nav-link">Pillars</a></li>
           </ul>
         </nav>
       </div>

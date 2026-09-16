@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Your Coffee Cart | Green Bean{% endblock %}
+
+{% block content %}
+<div class="cart-page-wrapper">
+  <div class="container cart-container">
+    <div class="cart-header">
+      <h1 class="cart-title">Your Fresh Roasts &amp; Orders</h1>
+      <p class="cart-subtitle">Review your artisanal selections before checkout.</p>
+    </div>
+
+    {% if cart.items %}
+      <div class="cart-layout">
+        <div class="cart-items-card">
+          <table class="cart-table">
+            <thead>
+              <tr>
+                <th>Item</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th class="text-right">Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in cart.items %}
+                <tr>
+                  <td>
+                    <strong>{{ item.variant.product.name }}</strong>
+                    <div class="table-subtext">
+                      {{ item.variant.get_form_factor_display }}
+                      {% if item.variant.package_weight_oz %}&bull; {{ item.variant.package_weight_oz }}oz{% endif %}
+                      {% if item.variant.grind_option != 'WHOLE_BEAN' %}&bull; {{ item.variant.get_grind_option_display }}{% endif %}
+                    </div>
+                    {% if item.customization_notes %}
+                      <div class="item-notes-text">Notes: {{ item.customization_notes }}</div>
+                    {% endif %}
+                  </td>
+                  <td>{{ item.quantity }}</td>
+                  <td>${{ item.unit_price }}</td>
+                  <td class="text-right"><strong>${{ item.line_total }}</strong></td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+        <div class="cart-summary-card">
+          <h3>Order Summary</h3>
+          <div class="summary-subtotal">
+            <span>Subtotal:</span>
+            <span class="subtotal-val">${{ cart.subtotal }}</span>
+          </div>
+          <p class="summary-note">Local taxes included. Worker-owned gratuity included in pricing.</p>
+          <div class="cart-actions">
+            <a href="{% url 'orders:checkout' %}" class="btn btn-primary btn-block">Proceed to Checkout &rarr;</a>
+            <a href="{% url 'catalog:catalog_list' %}" class="btn btn-secondary btn-block">Continue Browsing</a>
+          </div>
+        </div>
+      </div>
+    {% else %}
+      <div class="empty-catalog-state">
+        <div class="empty-icon">☕</div>
+        <h2>Your cart is currently empty</h2>
+        <p>Explore our single-origin harvests and small-batch roasts.</p>
+        <a href="{% url 'catalog:catalog_list' %}" class="btn btn-primary">Browse Coffee Menu</a>
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

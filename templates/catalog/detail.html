@@ -56,6 +56,7 @@
                   <th>SKU</th>
                   <th>Availability</th>
                   <th class="text-right">Price</th>
+                  <th class="text-right">Order</th>
                 </tr>
               </thead>
               <tbody>
@@ -87,10 +88,23 @@
                     <td class="text-right">
                       <span class="variant-price">${{ variant.retail_price_usd }}</span>
                     </td>
+                    <td class="text-right">
+                      {% if variant.is_available %}
+                        <form method="POST" action="{% url 'orders:cart_add' %}" style="display: inline;">
+                          {% csrf_token %}
+                          <input type="hidden" name="variant_id" value="{{ variant.id }}">
+                          <input type="hidden" name="quantity" value="1">
+                          <input type="hidden" name="action" value="checkout">
+                          <button type="submit" class="btn btn-sm btn-primary">Order &rarr;</button>
+                        </form>
+                      {% else %}
+                        <span class="table-subtext">Unavailable</span>
+                      {% endif %}
+                    </td>
                   </tr>
                 {% empty %}
                   <tr>
-                    <td colspan="5" class="empty-table-cell">
+                    <td colspan="6" class="empty-table-cell">
                       No packaged variants currently listed. Inquire with the roastery counter.
                     </td>
                   </tr>
