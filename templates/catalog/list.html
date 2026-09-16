@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Coffee Offerings & Catalog | Green Bean{% endblock %}
+
+{% block content %}
+<section class="catalog-header-section">
+  <div class="container">
+    <div class="catalog-hero-text">
+      <span class="badge badge-est">Direct Trade &amp; Freshly Roasted</span>
+      <h1 class="catalog-title">Coffee Catalog &amp; Offerings</h1>
+      <p class="catalog-subtitle">
+        Single-origin selections, artisanal house blends, fresh espresso bar pours, and bulk airpots. Roasted and prepared with worker-owned care.
+      </p>
+    </div>
+
+    <!-- Filter Chips -->
+    <div class="filter-chips-container">
+      <div class="filter-chips">
+        {% for filter in filter_choices %}
+          <a
+            href="{% if filter.key == 'ALL' %}{% url 'catalog:catalog_list' %}{% else %}?form_factor={{ filter.key }}{% endif %}"
+            class="filter-chip {% if current_filter == filter.key %}active{% endif %}"
+          >
+            {{ filter.label }}
+          </a>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="catalog-products-section">
+  <div class="container">
+    {% if products %}
+      <div class="products-grid">
+        {% for product in products %}
+          <article class="product-card">
+            <div class="product-card-top">
+              {% if product.roast_profile %}
+                <span class="roast-badge badge-{{ product.roast_profile.roast_level|lower }}">
+                  {{ product.roast_profile.get_roast_level_display }}
+                </span>
+              {% endif %}
+              {% if product.is_single_origin %}
+                <span class="badge-single-origin">Single Origin</span>
+              {% else %}
+                <span class="badge-blend">Collective Blend</span>
+              {% endif %}
+            </div>
+
+            <div class="product-card-body">
+              <h2 class="product-name">
+                <a href="{{ product.get_absolute_url }}">{{ product.name }}</a>
+              </h2>
+
+              {% if product.lot %}
+                <div class="product-origin">
+                  <strong>{{ product.lot.origin_country }}</strong> &bull; {{ product.lot.region_farm }}
+                  <span class="producer-tag">{{ product.lot.producer_coop }}</span>
+                </div>
+              {% endif %}
+
+              {% if product.roast_profile %}
+                <div class="tasting-notes">
+                  <span class="notes-icon">✨</span>
+                  <em>{{ product.roast_profile.tasting_notes }}</em>
+                </div>
+              {% endif %}
+
+              {% if product.description %}
+                <p class="product-excerpt">
+                  {{ product.description|truncatewords:24 }}
+                </p>
+              {% endif %}
+
+              <!-- Available Variants Pills -->
+              <div class="variants-summary">
+                <div class="variants-label">Available Forms:</div>
+                <div class="variants-tags">
+                  {% for variant in product.variants.all %}
+                    <span class="variant-pill">
+                      {{ variant.get_form_factor_display }}
+                      {% if variant.package_weight_oz %}({{ variant.package_weight_oz }}oz){% endif %}
+                      — ${{ variant.retail_price_usd }}
+                    </span>
+                  {% empty %}
+                    <span class="variant-pill-empty">Consult Barista / In-Store</span>
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+
+            <div class="product-card-footer">
+              <div class="price-range">
+                {% if product.min_price %}
+                  {% if product.min_price == product.max_price %}
+                    <span class="price-val">${{ product.min_price }}</span>
+                  {% else %}
+                    <span class="price-val">${{ product.min_price }} &ndash; ${{ product.max_price }}</span>
+                  {% endif %}
+                {% else %}
+                  <span class="price-val">Seasonal</span>
+                {% endif %}
+              </div>
+              <a href="{{ product.get_absolute_url }}" class="btn btn-sm btn-primary">View Details &rarr;</a>
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="empty-catalog-state">
+        <div class="empty-icon">☕</div>
+        <h3>No coffee offerings found for this selection.</h3>
+        <p>Try selecting a different form factor or view all offerings.</p>
+        <a href="{% url 'catalog:catalog_list' %}" class="btn btn-secondary">Reset Filters</a>
+      </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

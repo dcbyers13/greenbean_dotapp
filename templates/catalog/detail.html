@@ -1,0 +1,179 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ product.name }} | Green Bean Coffee Collective{% endblock %}
+
+{% block content %}
+<div class="product-detail-page">
+  <div class="container">
+    <!-- Breadcrumb -->
+    <nav class="breadcrumb-nav">
+      <a href="{% url 'catalog:catalog_list' %}">&larr; Back to Coffee Catalog</a>
+    </nav>
+
+    <div class="product-detail-layout">
+      <!-- Main Product Info -->
+      <div class="product-detail-main">
+        <div class="product-header">
+          <div class="header-badges">
+            {% if product.roast_profile %}
+              <span class="roast-badge badge-{{ product.roast_profile.roast_level|lower }}">
+                {{ product.roast_profile.get_roast_level_display }} Roast
+              </span>
+            {% endif %}
+            {% if product.is_single_origin %}
+              <span class="badge-single-origin">Single Origin Lot</span>
+            {% else %}
+              <span class="badge-blend">Artisanal Blend</span>
+            {% endif %}
+          </div>
+          <h1 class="detail-product-title">{{ product.name }}</h1>
+
+          {% if product.roast_profile %}
+            <div class="detail-tasting-notes">
+              <span class="notes-prefix">Tasting Notes:</span>
+              <span class="notes-body">{{ product.roast_profile.tasting_notes }}</span>
+            </div>
+          {% endif %}
+        </div>
+
+        {% if product.description %}
+          <div class="product-description-card">
+            <h3>About This Coffee</h3>
+            <p>{{ product.description|linebreaks }}</p>
+          </div>
+        {% endif %}
+
+        <!-- Purchasable Variants & Sizes -->
+        <div class="variants-section">
+          <h2 class="variants-heading">Available Form Factors &amp; Packaging</h2>
+          <div class="variants-table-wrapper">
+            <table class="variants-table">
+              <thead>
+                <tr>
+                  <th>Form &amp; Grind</th>
+                  <th>Size / Weight</th>
+                  <th>SKU</th>
+                  <th>Availability</th>
+                  <th class="text-right">Price</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for variant in product.variants.all %}
+                  <tr>
+                    <td>
+                      <strong>{{ variant.get_form_factor_display }}</strong>
+                      {% if variant.grind_option != 'WHOLE_BEAN' %}
+                        <span class="table-subtext">{{ variant.get_grind_option_display }}</span>
+                      {% endif %}
+                    </td>
+                    <td>
+                      {% if variant.package_weight_oz %}
+                        {{ variant.package_weight_oz }} oz
+                      {% else %}
+                        Single Serving / Fresh
+                      {% endif %}
+                    </td>
+                    <td><code class="sku-code">{{ variant.sku }}</code></td>
+                    <td>
+                      {% if variant.is_available and variant.stock_units > 0 %}
+                        <span class="stock-badge in-stock">In Stock ({{ variant.stock_units }})</span>
+                      {% elif variant.is_available %}
+                        <span class="stock-badge fresh-prepared">Fresh Prepared</span>
+                      {% else %}
+                        <span class="stock-badge out-of-stock">Sold Out</span>
+                      {% endif %}
+                    </td>
+                    <td class="text-right">
+                      <span class="variant-price">${{ variant.retail_price_usd }}</span>
+                    </td>
+                  </tr>
+                {% empty %}
+                  <tr>
+                    <td colspan="5" class="empty-table-cell">
+                      No packaged variants currently listed. Inquire with the roastery counter.
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Origin & Terroir Sidebar -->
+      <aside class="product-detail-sidebar">
+        {% if product.lot %}
+          <div class="origin-card">
+            <div class="sidebar-card-header">
+              <span class="card-icon">🌱</span>
+              <h3>Origin &amp; Ethical Terroir</h3>
+            </div>
+            <dl class="origin-specs">
+              <div class="spec-row">
+                <dt>Country of Origin</dt>
+                <dd><strong>{{ product.lot.origin_country }}</strong></dd>
+              </div>
+              <div class="spec-row">
+                <dt>Region &amp; Farm</dt>
+                <dd>{{ product.lot.region_farm }}</dd>
+              </div>
+              <div class="spec-row">
+                <dt>Producer Cooperative</dt>
+                <dd>{{ product.lot.producer_coop }}</dd>
+              </div>
+              <div class="spec-row">
+                <dt>Botanical Varietal</dt>
+                <dd>{{ product.lot.varietal }}</dd>
+              </div>
+              <div class="spec-row">
+                <dt>Processing Method</dt>
+                <dd>{{ product.lot.get_process_method_display }}</dd>
+              </div>
+              <div class="spec-row">
+                <dt>Elevation</dt>
+                <dd>{{ product.lot.altitude_meters }} MASL</dd>
+              </div>
+              <div class="spec-row">
+                <dt>Harvest Date</dt>
+                <dd>{{ product.lot.harvest_date|date:"F Y" }}</dd>
+              </div>
+              <div class="spec-row highlight-price">
+                <dt>Direct Price Paid to Coop</dt>
+                <dd>${{ product.lot.fair_price_paid_usd }} / lb</dd>
+              </div>
+            </dl>
+          </div>
+        {% endif %}
+
+        {% if product.roast_profile %}
+          <div class="roast-spec-card">
+            <div class="sidebar-card-header">
+              <span class="card-icon">🔥</span>
+              <h3>Roasting Metrics</h3>
+            </div>
+            <dl class="origin-specs">
+              <div class="spec-row">
+                <dt>Profile Name</dt>
+                <dd>{{ product.roast_profile.roast_name }}</dd>
+              </div>
+              <div class="spec-row">
+                <dt>Roast Level</dt>
+                <dd>{{ product.roast_profile.get_roast_level_display }}</dd>
+              </div>
+              <div class="spec-row">
+                <dt>Target Drop Temp</dt>
+                <dd>{{ product.roast_profile.target_drop_temp_f }}&deg;F</dd>
+              </div>
+              <div class="spec-row">
+                <dt>Development Time</dt>
+                <dd>{{ product.roast_profile.development_time_sec }}s</dd>
+              </div>
+            </dl>
+          </div>
+        {% endif %}
+      </aside>
+    </div>
+  </div>
+</div>
+{% endblock %}

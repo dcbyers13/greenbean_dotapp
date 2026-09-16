@@ -23,13 +23,13 @@
 ---
 
 ## Phase 2: Multi-Form Coffee Catalog Engine
-- [ ] Scaffold `apps/catalog` application module
-- [ ] Implement `GreenCoffeeLot` data model with origin terroir, processing method, and harvest date
-- [ ] Implement `RoastProfile` data model with roast curve notes and temperature metrics
-- [ ] Implement `CoffeeProduct` and `ProductVariant` models (bag sizes: 12oz, 2lb, 5lb; grind formulations)
-- [ ] Create catalog administration views for roasters and batch management
-- [ ] Build consumer catalog listing and coffee detail pages
-- [ ] Add unit tests for catalog model constraints and inventory decrement logic
+- [x] Scaffold `apps/catalog` application module
+- [x] Implement `GreenCoffeeLot` data model with origin terroir, processing method, and harvest date
+- [x] Implement `RoastProfile` data model with roast curve notes and temperature metrics
+- [x] Implement `CoffeeProduct` and `ProductVariant` models (bag sizes: 12oz, 2lb, 5lb; grind formulations)
+- [x] Create catalog administration views for roasters and batch management
+- [x] Build consumer catalog listing and coffee detail pages
+- [x] Add unit tests for catalog model constraints and inventory decrement logic
 
 ---
 
