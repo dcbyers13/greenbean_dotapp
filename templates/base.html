@@ -1,0 +1,51 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Green Bean Coffee Collective | greenbean.app{% endblock %}</title>
+  <meta name="description" content="Worker-owned, community-powered coffee. Sourced ethically, roasted locally, and rooted in our neighborhood. Est. 2017.">
+  <link rel="icon" type="image/png" href="{% static 'img/logo.png' %}">
+  <link rel="stylesheet" href="{% static 'css/brand.css' %}">
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+  <div class="site-wrapper">
+    <header class="site-header">
+      <div class="container header-content">
+        <a href="{% url 'core:splash' %}" class="header-brand">
+          <img src="{% static 'img/logo.png' %}" alt="Green Bean Coffee Collective Logo" width="38" height="38">
+          <span>GREEN BEAN</span>
+        </a>
+        <nav>
+          <ul class="nav-links">
+            <li><a href="#mission" class="nav-link">Mission</a></li>
+            <li><a href="#pillars" class="nav-link">Pillars</a></li>
+            <li><a href="#roadmap" class="nav-link">Roadmap</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main-content">
+      {% block content %}{% endblock %}
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-content">
+        <div>
+          <div class="footer-brand">Green Bean Coffee Collective</div>
+          <p class="footer-copy">&copy; 2017–{% now "Y" %} Green Bean Collective. Worker-owned Operating Company (OpCo). All rights reserved.</p>
+        </div>
+        <ul class="footer-links">
+          <li><span class="footer-link">greenbean.app</span></li>
+          <li><span class="footer-link">anti-extractive</span></li>
+          <li><span class="footer-link">federated</span></li>
+        </ul>
+      </div>
+    </footer>
+  </div>
+  {% block extra_scripts %}{% endblock %}
+</body>
+</html>

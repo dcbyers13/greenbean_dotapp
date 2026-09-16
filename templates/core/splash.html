@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Green Bean — Worker-Owned, Community-Powered Coffee | greenbean.app{% endblock %}
+
+{% block content %}
+<!-- Hero & Centered Medallion Presentation -->
+<section class="hero-splash" id="mission">
+  <div class="container">
+    <!-- Centered Brand Medallion -->
+    <div class="medallion-container">
+      <div class="medallion-outer">
+        <img
+          src="{% static 'img/logo.png' %}"
+          alt="Green Bean Medallion Logo"
+          class="medallion-logo"
+          width="250"
+          height="250"
+        >
+      </div>
+    </div>
+
+    <!-- Status Badges -->
+    <div class="status-badges">
+      <span class="badge badge-est">
+        Est. 2017
+      </span>
+      <span class="badge badge-domain">
+        Domain Secured: greenbean.app
+      </span>
+      <span class="badge badge-status">
+        <span class="badge-pulse-dot"></span>
+        Phase 1: Operational
+      </span>
+    </div>
+
+    <!-- Typography & Mission -->
+    <h1 class="hero-title">
+      FRESH ROASTED. <span class="title-accent">WORKER OWNED.</span>
+    </h1>
+
+    <div class="hero-mission-callout">
+      &ldquo;Worker-owned, community-powered coffee. Sourced ethically, roasted locally, and rooted in our neighborhood.&rdquo;
+    </div>
+
+    <div class="hero-actions">
+      <a href="#pillars" class="btn btn-primary">Discover the Model</a>
+      <a href="#architecture" class="btn btn-secondary">Platform Architecture</a>
+    </div>
+  </div>
+</section>
+
+<!-- Cooperative Pillars Section -->
+<section class="pillars-section" id="pillars">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">An Anti-Extractive Coffee Collective</h2>
+      <p class="section-subtitle">
+        Schemed and developed since 2017 to provide an independent, high-quality alternative to corporate extraction.
+      </p>
+    </div>
+
+    <div class="pillars-grid">
+      <div class="pillar-card">
+        <div class="pillar-icon">🌱</div>
+        <h3 class="pillar-title">Worker Ownership</h3>
+        <p class="pillar-description">
+          Operating Company (OpCo) owned directly by its roasters, baristas, and staff. Profits stay with those who create the value.
+        </p>
+      </div>
+
+      <div class="pillar-card">
+        <div class="pillar-icon">☕</div>
+        <h3 class="pillar-title">Direct Ethical Sourcing</h3>
+        <p class="pillar-description">
+          Transparent relationships with single-origin smallholder growers, ensuring dignity, environmental stewardship, and living wages.
+        </p>
+      </div>
+
+      <div class="pillar-card">
+        <div class="pillar-icon">🔥</div>
+        <h3 class="pillar-title">Artisanal Small-Batch</h3>
+        <p class="pillar-description">
+          Precision roasted locally to unlock the delicate terroir, nuanced aromatics, and peak flavor profile of every harvest.
+        </p>
+      </div>
+
+      <div class="pillar-card">
+        <div class="pillar-icon">🌐</div>
+        <h3 class="pillar-title">Federated Mesh Platform</h3>
+        <p class="pillar-description">
+          Lightweight, open-standard monolith connected into cooperative accounting, democratic dividend distribution, and local curbside telemetry.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
