@@ -1,0 +1,644 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Democratic Governance & Patronage Waterfall | Green Bean{% endblock %}
+
+{% block content %}
+<div class="gov-container">
+  <!-- Hero Section -->
+  <header class="gov-hero">
+    <div class="gov-badge-row">
+      <span class="badge-opco">Worker-Owned OpCo</span>
+      <span class="badge-poly">iyou_poly Democratic Bridge</span>
+      <span class="badge-federation">Mesh Federated</span>
+    </div>
+    <h1 class="gov-title">Democratic Governance &amp; Patronage Waterfall</h1>
+    <p class="gov-lead">
+      Green Bean operates as an anti-extractive, worker-owned commercial collective. 
+      Surplus is distributed through a transparent, post-reinvestment waterfall: 50% to worker-owners based on verified labor hours, and 50% to our community participatory budgeting fund.
+    </p>
+  </header>
+
+  <!-- Metrics Row -->
+  <section class="gov-metrics-grid" aria-label="Key Governance Metrics">
+    <div class="metric-card">
+      <div class="metric-label">Worker-Owners</div>
+      <div class="metric-value">{{ worker_members_count }}</div>
+      <div class="metric-caption">Active cooperative members</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Community Budget Fund</div>
+      <div class="metric-value metric-accent">${{ total_community_fund|floatformat:2 }}</div>
+      <div class="metric-caption">Generated for participatory grants</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Reinvestment Reserve</div>
+      <div class="metric-value">${{ total_reinvestment_reserve|floatformat:2 }}</div>
+      <div class="metric-caption">Retained capital for equipment</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Total Distributable Surplus</div>
+      <div class="metric-value metric-leaf">${{ total_distributable_surplus|floatformat:2 }}</div>
+      <div class="metric-caption">50/50 Worker &amp; Community Split</div>
+    </div>
+  </section>
+
+  <!-- Waterfall Breakdown Card -->
+  <section class="waterfall-card" aria-label="Profit Waterfall Architecture">
+    <div class="waterfall-header">
+      <h2>The Democratic Surplus Waterfall</h2>
+      <span class="pill-rule">Post-Reinvestment Split Architecture</span>
+    </div>
+    <div class="waterfall-flow">
+      <div class="flow-step">
+        <div class="step-badge">1</div>
+        <div class="step-content">
+          <h3>Gross Revenue</h3>
+          <p>Tender collected across counter POS, curbside orders, beans, and bakery.</p>
+        </div>
+      </div>
+      <div class="flow-arrow">&darr;</div>
+      <div class="flow-step">
+        <div class="step-badge">2</div>
+        <div class="step-content">
+          <h3>Store Operations &amp; COGS</h3>
+          <p>Ethical lot price floors, bakery ingredients, utilities, and fair hourly base pay deducted.</p>
+        </div>
+      </div>
+      <div class="flow-arrow">&darr;</div>
+      <div class="flow-step">
+        <div class="step-badge">3</div>
+        <div class="step-content">
+          <h3>20% Reinvestment Reserve</h3>
+          <p>Retained capital for roastery maintenance, batch equipment, and cooperative durability.</p>
+        </div>
+      </div>
+      <div class="flow-arrow">&darr;</div>
+      <div class="flow-split-row">
+        <div class="split-col split-worker">
+          <div class="split-header">
+            <h4>50% Worker Dividend Pool</h4>
+            <span class="split-pct">50%</span>
+          </div>
+          <p>
+            Distributed proportionally to worker-owners based on verified shift hours across roaster, barista, bakery, and maintenance stations.
+          </p>
+        </div>
+        <div class="split-col split-community">
+          <div class="split-header">
+            <h4>50% Community Fund</h4>
+            <span class="split-pct">50%</span>
+          </div>
+          <p>
+            Bridged via <code>iyou_poly</code> to fund neighborhood quadratic participatory budgeting grants and local public goods.
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="waterfall-footer">
+      <p>
+        <strong>Zero-Surplus Invariant:</strong> Surplus arithmetic is strictly non-negative. If operations yield zero or negative surplus, zero dividends are distributed (no negative equity draw or debt transfer onto workers).
+      </p>
+    </div>
+  </section>
+
+  <!-- Fiscal Distributions Table -->
+  <section class="gov-section" aria-label="Fiscal Distributions">
+    <div class="section-title-row">
+      <h2>Surplus Distributions</h2>
+      <span class="section-badge">{{ distributions|length }} Periods Recorded</span>
+    </div>
+
+    {% if distributions %}
+      <div class="table-responsive">
+        <table class="gov-table">
+          <thead>
+            <tr>
+              <th>Period</th>
+              <th>Date Window</th>
+              <th>Gross Revenue</th>
+              <th>Opex Costs</th>
+              <th>Reinvestment</th>
+              <th>Worker Pool (50%)</th>
+              <th>Community Fund (50%)</th>
+              <th>Status</th>
+              <th>Export</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for dist in distributions %}
+              <tr>
+                <td><strong>{{ dist.period_label }}</strong></td>
+                <td>{{ dist.period_start|date:"M d, Y" }} &ndash; {{ dist.period_end|date:"M d, Y" }}</td>
+                <td>${{ dist.gross_revenue_usd|floatformat:2 }}</td>
+                <td>${{ dist.operating_costs_usd|floatformat:2 }}</td>
+                <td>${{ dist.reinvestment_reserve_usd|floatformat:2 }}</td>
+                <td class="cell-highlight">${{ dist.worker_pool_usd|floatformat:2 }}</td>
+                <td class="cell-community">${{ dist.community_pool_usd|floatformat:2 }}</td>
+                <td><span class="status-badge status-{{ dist.status|lower }}">{{ dist.get_status_display }}</span></td>
+                <td>
+                  <a href="{% url 'poly:distribution_export' dist.id %}" target="_blank" class="btn-sm-export">
+                    JSON Payload
+                  </a>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="empty-state">
+        <p>No quarterly surplus distributions finalized yet. Complete order cycles and shift hours to generate distributions.</p>
+      </div>
+    {% endif %}
+  </section>
+
+  <!-- Worker-Owner Roster & Station Coverage -->
+  {% if active_workers %}
+  <section class="gov-section" aria-label="Worker-Owner Roster">
+    <div class="section-title-row">
+      <h2>Worker-Owner Assembly</h2>
+      <span class="section-badge">{{ active_workers|length }} Active Members</span>
+    </div>
+    <div class="worker-grid">
+      {% for worker in active_workers %}
+        <div class="worker-card">
+          <div class="worker-avatar">{{ worker.name|slice:":1" }}</div>
+          <div class="worker-details">
+            <h3 class="worker-name">{{ worker.name }}</h3>
+            <div class="worker-role">{{ worker.role }}</div>
+            <div class="worker-did" title="{{ worker.did }}"><code>{{ worker.did|truncatechars:28 }}</code></div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  <!-- Federation Manifest Gateway Card -->
+  <section class="federation-card" aria-label="Cooperative Mesh Federation">
+    <div class="fed-content">
+      <div class="fed-icon">&#x25CE;</div>
+      <div>
+        <h2>Decentralized Cooperative Mesh Federation</h2>
+        <p>
+          Green Bean publishes machine-readable cooperative manifests enabling sovereign nodes to interoperate, cross-verify sourcing charters, and participate in distributed guest roaster exchanges.
+        </p>
+      </div>
+    </div>
+    <div class="fed-action">
+      <a href="{% url 'coop:manifest' %}" target="_blank" class="btn-fed-manifest">
+        View /.well-known/coop-manifest.json &rarr;
+      </a>
+    </div>
+  </section>
+</div>
+
+<style>
+.gov-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 4rem;
+}
+.gov-hero {
+  margin-bottom: 2.5rem;
+}
+.gov-badge-row {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+.badge-opco {
+  background-color: var(--clr-leaf-green);
+  color: var(--clr-pure-white);
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.badge-poly {
+  background-color: #2563eb;
+  color: var(--clr-pure-white);
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.badge-federation {
+  background-color: var(--clr-roast-brown);
+  color: var(--clr-pure-white);
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.gov-title {
+  font-size: 2.25rem;
+  font-weight: 800;
+  color: var(--clr-roast-brown);
+  margin: 0 0 0.75rem 0;
+  letter-spacing: -0.02em;
+}
+.gov-lead {
+  font-size: 1.125rem;
+  line-height: 1.6;
+  color: #4b5563;
+  max-width: 860px;
+  margin: 0;
+}
+
+/* Metrics Grid */
+.gov-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 2.5rem;
+}
+.metric-card {
+  background: var(--clr-pure-white);
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+.metric-label {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
+}
+.metric-value {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--clr-roast-brown);
+  margin-bottom: 0.25rem;
+  letter-spacing: -0.02em;
+}
+.metric-accent {
+  color: #2563eb;
+}
+.metric-leaf {
+  color: var(--clr-leaf-green);
+}
+.metric-caption {
+  font-size: 0.8125rem;
+  color: #9ca3af;
+}
+
+/* Waterfall Card */
+.waterfall-card {
+  background: #fdfdfc;
+  border: 2px solid var(--clr-leaf-green);
+  border-radius: 16px;
+  padding: 2rem;
+  margin-bottom: 2.5rem;
+  box-shadow: 0 4px 12px rgba(153, 203, 51, 0.12);
+}
+.waterfall-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+.waterfall-header h2 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--clr-roast-brown);
+  margin: 0;
+}
+.pill-rule {
+  background: #ecfccb;
+  color: #3f6212;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+}
+.waterfall-flow {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+.flow-step {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: var(--clr-pure-white);
+  border: 1px solid #e5e7eb;
+  padding: 1rem 1.25rem;
+  border-radius: 10px;
+}
+.step-badge {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--clr-roast-brown);
+  color: var(--clr-pure-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 0.9375rem;
+  flex-shrink: 0;
+}
+.step-content h3 {
+  margin: 0 0 0.25rem 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--clr-roast-brown);
+}
+.step-content p {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #4b5563;
+}
+.flow-arrow {
+  text-align: center;
+  font-size: 1.25rem;
+  font-weight: 900;
+  color: var(--clr-leaf-green);
+  line-height: 1;
+}
+.flow-split-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+@media (max-width: 640px) {
+  .flow-split-row {
+    grid-template-columns: 1fr;
+  }
+}
+.split-col {
+  border-radius: 12px;
+  padding: 1.25rem;
+  border: 1px solid transparent;
+}
+.split-worker {
+  background: #f0fdf4;
+  border-color: #86efac;
+}
+.split-community {
+  background: #eff6ff;
+  border-color: #93c5fd;
+}
+.split-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+.split-header h4 {
+  margin: 0;
+  font-size: 1.0625rem;
+  font-weight: 800;
+  color: var(--clr-roast-brown);
+}
+.split-pct {
+  font-size: 1.125rem;
+  font-weight: 900;
+  color: var(--clr-leaf-green);
+}
+.split-community .split-pct {
+  color: #2563eb;
+}
+.split-col p {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #374151;
+  line-height: 1.5;
+}
+.waterfall-footer {
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px dashed #d1d5db;
+}
+.waterfall-footer p {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: #6b7280;
+  line-height: 1.5;
+}
+
+/* Sections & Tables */
+.gov-section {
+  margin-bottom: 2.5rem;
+}
+.section-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+.section-title-row h2 {
+  font-size: 1.375rem;
+  font-weight: 800;
+  color: var(--clr-roast-brown);
+  margin: 0;
+}
+.section-badge {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #6b7280;
+  background: #e5e7eb;
+  padding: 0.25rem 0.625rem;
+  border-radius: 999px;
+}
+.table-responsive {
+  overflow-x: auto;
+  background: var(--clr-pure-white);
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+}
+.gov-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.875rem;
+}
+.gov-table th {
+  background: #f9fafb;
+  padding: 0.875rem 1rem;
+  font-weight: 700;
+  color: #374151;
+  border-bottom: 1px solid #e5e7eb;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+}
+.gov-table td {
+  padding: 0.875rem 1rem;
+  border-bottom: 1px solid #f3f4f6;
+  color: #1f2937;
+}
+.gov-table tr:last-child td {
+  border-bottom: none;
+}
+.cell-highlight {
+  font-weight: 700;
+  color: var(--clr-leaf-green);
+}
+.cell-community {
+  font-weight: 700;
+  color: #2563eb;
+}
+.status-badge {
+  display: inline-block;
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.6875rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.status-finalized {
+  background: #dcfce7;
+  color: #166534;
+}
+.status-draft {
+  background: #fef3c7;
+  color: #92400e;
+}
+.status-disbursed {
+  background: #dbeafe;
+  color: #1e40af;
+}
+.btn-sm-export {
+  display: inline-block;
+  background: var(--clr-roast-brown);
+  color: var(--clr-pure-white);
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.35rem 0.65rem;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: background 0.15s;
+}
+.btn-sm-export:hover {
+  background: #2b170c;
+  color: var(--clr-pure-white);
+}
+
+/* Worker Roster Grid */
+.worker-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+}
+.worker-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: var(--clr-pure-white);
+  border: 1px solid #e5e7eb;
+  padding: 1rem;
+  border-radius: 12px;
+}
+.worker-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--clr-leaf-green);
+  color: var(--clr-pure-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 1.125rem;
+  flex-shrink: 0;
+}
+.worker-name {
+  margin: 0 0 0.125rem 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--clr-roast-brown);
+}
+.worker-role {
+  font-size: 0.8125rem;
+  color: #6b7280;
+  margin-bottom: 0.25rem;
+}
+.worker-did {
+  font-size: 0.6875rem;
+  color: #9ca3af;
+}
+.worker-did code {
+  background: #f3f4f6;
+  padding: 0.1rem 0.3rem;
+  border-radius: 4px;
+}
+
+/* Federation Card */
+.federation-card {
+  background: linear-gradient(135deg, #2b170c 0%, #452614 100%);
+  color: var(--clr-pure-white);
+  border-radius: 16px;
+  padding: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  box-shadow: 0 8px 24px rgba(69, 38, 20, 0.25);
+}
+.fed-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.25rem;
+  max-width: 720px;
+}
+.fed-icon {
+  font-size: 2.25rem;
+  color: var(--clr-leaf-green);
+  line-height: 1;
+}
+.fed-content h2 {
+  font-size: 1.375rem;
+  font-weight: 800;
+  margin: 0 0 0.5rem 0;
+  color: var(--clr-pure-white);
+}
+.fed-content p {
+  margin: 0;
+  font-size: 0.9375rem;
+  color: #d1d5db;
+  line-height: 1.5;
+}
+.btn-fed-manifest {
+  display: inline-block;
+  background: var(--clr-leaf-green);
+  color: var(--clr-roast-brown);
+  font-weight: 800;
+  font-size: 0.9375rem;
+  padding: 0.75rem 1.25rem;
+  border-radius: 8px;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: opacity 0.15s, transform 0.15s;
+}
+.btn-fed-manifest:hover {
+  opacity: 0.92;
+  transform: translateY(-1px);
+}
+.empty-state {
+  background: var(--clr-pure-white);
+  border: 1px dashed #d1d5db;
+  border-radius: 12px;
+  padding: 2rem;
+  text-align: center;
+  color: #6b7280;
+}
+</style>
+{% endblock %}

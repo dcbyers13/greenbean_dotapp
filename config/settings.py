@@ -47,6 +47,8 @@ INSTALLED_APPS = [
     "orders.apps.OrdersConfig",
     "telemetry.apps.TelemetryConfig",
     "adapters.iyou_bean.apps.IyouBeanConfig",
+    "adapters.iyou_poly.apps.IyouPolyConfig",
+    "adapters.iyou_coop.apps.IyouCoopConfig",
 ]
 
 MIDDLEWARE = [

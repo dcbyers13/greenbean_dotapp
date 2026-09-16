@@ -71,10 +71,10 @@
 ---
 
 ## Phase 5: Democratic Governance & Mesh Federation (`iyou_poly` & `iyou_coop`)
-- [ ] Scaffold `apps/adapters/iyou_poly` democratic patronage engine
-- [ ] Ingest labor-hour logs and calculate quarterly member dividend allocations
-- [ ] Build worker equity dashboard
-- [ ] Scaffold `apps/adapters/iyou_coop` federation gateway
-- [ ] Expose `/.well-known/coop-manifest.json` discovery endpoint
-- [ ] Implement inter-roaster guest coffee exchange registry
-- [ ] Write automated verification tests for federation manifest schemas
+- [x] Scaffold `apps/adapters/iyou_poly` democratic patronage engine
+- [x] Ingest labor-hour logs and calculate quarterly member dividend allocations
+- [x] Build worker equity dashboard
+- [x] Scaffold `apps/adapters/iyou_coop` federation gateway
+- [x] Expose `/.well-known/coop-manifest.json` discovery endpoint
+- [x] Implement inter-roaster guest coffee exchange registry
+- [x] Write automated verification tests for federation manifest schemas

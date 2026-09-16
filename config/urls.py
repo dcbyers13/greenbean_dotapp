@@ -10,6 +10,9 @@ urlpatterns = [
     path("menu/", include("catalog.urls", namespace="catalog")),
     path("api/telemetry/", include("telemetry.urls", namespace="telemetry")),
     path("api/adapters/iyou_bean/", include("adapters.iyou_bean.urls", namespace="iyou_bean")),
+    path("", include("adapters.iyou_poly.urls", namespace="poly")),
+    path("", include("adapters.iyou_poly.urls", namespace="iyou_poly")),
+    path("", include("adapters.iyou_coop.urls", namespace="coop")),
     path("", include("orders.urls", namespace="orders")),
     path("", include("core.urls", namespace="core")),
 ]

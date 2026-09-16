@@ -23,6 +23,7 @@
             <li><a href="{% url 'catalog:catalog_list' %}" class="nav-link">Menu &amp; Catalog</a></li>
             <li><a href="{% url 'orders:kds_hud' %}" class="nav-link">Barista KDS</a></li>
             <li><a href="{% url 'orders:pos_register' %}" class="nav-link">POS Register</a></li>
+            <li><a href="{% url 'poly:governance_dashboard' %}" class="nav-link">Governance</a></li>
             <li><a href="{% url 'orders:cart_detail' %}" class="nav-link">Cart</a></li>
             <li><a href="{% url 'core:splash' %}#mission" class="nav-link">Mission</a></li>
           </ul>
@@ -43,7 +44,7 @@
         <ul class="footer-links">
           <li><span class="footer-link">greenbean.app</span></li>
           <li><span class="footer-link">anti-extractive</span></li>
-          <li><span class="footer-link">federated</span></li>
+          <li><a href="{% url 'coop:manifest' %}" class="footer-link">federation manifest</a></li>
         </ul>
       </div>
     </footer>
