@@ -45,3 +45,24 @@ class SplashViewTestCase(SimpleTestCase):
         self.assertContains(response, "Est. 2017")
         self.assertContains(response, "Domain Secured: greenbean.app")
         self.assertContains(response, "Phase 1: Operational")
+
+
+class StaticAssetsResolutionTestCase(SimpleTestCase):
+    """Verify static asset resolution for brand styling and imagery."""
+
+    def test_brand_css_resolves_http_200(self):
+        """GET /static/css/brand.css must return HTTP 200."""
+        response = self.client.get("/static/css/brand.css")
+        self.assertEqual(response.status_code, 200)
+
+    def test_logo_png_resolves_http_200(self):
+        """GET /static/img/logo.png must return HTTP 200."""
+        response = self.client.get("/static/img/logo.png")
+        self.assertEqual(response.status_code, 200)
+
+    def test_fallback_static_paths_resolve_http_200(self):
+        """Fallback root static paths /static/brand.css and /static/logo.png must resolve HTTP 200."""
+        css_resp = self.client.get("/static/brand.css")
+        self.assertEqual(css_resp.status_code, 200)
+        logo_resp = self.client.get("/static/logo.png")
+        self.assertEqual(logo_resp.status_code, 200)

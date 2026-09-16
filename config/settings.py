@@ -20,7 +20,7 @@ if str(APPS_DIR) not in sys.path:
 env = environ.Env(
     DEBUG=(bool, False),
     SECRET_KEY=(str, "django-insecure-greenbean-dev-secret-key-change-in-prod"),
-    ALLOWED_HOSTS=(list, ["localhost", "127.0.0.1", "greenbean.app", "*.greenbean.app"]),
+    ALLOWED_HOSTS=(list, ["localhost", "127.0.0.1", "greenbean.app", "*.greenbean.app", "testserver"]),
 )
 
 # Take environment variables from .env file if present
@@ -112,7 +112,9 @@ USE_TZ = True
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 STATIC_ROOT.mkdir(parents=True, exist_ok=True)
-STATICFILES_DIRS = [BASE_DIR / "static"]
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
 
 # WhiteNoise static storage configuration with compression and caching
 STORAGES = {
@@ -123,6 +125,16 @@ STORAGES = {
         "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
     },
 }
+
+# Ensure WhiteNoise finds uncollected static files during development & testing
+WHITENOISE_USE_FINDERS = True
+WHITENOISE_MANIFEST_STRICT = False
+
+# Ensure manifest_strict is False so missing unhashed assets do not throw runtime 500s
+import whitenoise.storage
+whitenoise.storage.CompressedStaticFilesStorage.manifest_strict = False
+if hasattr(whitenoise.storage, "CompressedManifestStaticFilesStorage"):
+    whitenoise.storage.CompressedManifestStaticFilesStorage.manifest_strict = False
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"

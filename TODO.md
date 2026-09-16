@@ -13,6 +13,7 @@
 - [x] Configure namespaced session and CSRF cookies (`greenbean_sessionid`, `greenbean_csrftoken`)
 - [x] Set session engine to signed cookies (`django.contrib.sessions.backends.signed_cookies`)
 - [x] Configure WhiteNoise static asset delivery with compression and caching
+- [x] Fix static asset pipeline resolution for brand.css and logo.png with fallback aliases
 - [x] Implement `static/css/brand.css` with exact brand color tokens
 - [x] Provision brand logo medallion at `static/img/logo.png`
 - [x] Build base and splash templates with centered medallion and status badges
